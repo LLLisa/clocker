@@ -1,0 +1,21 @@
+{
+  "name": "clocker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:dev": "nodemon --ignore './cookies.json'  main.js "
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chrome-launcher": "^0.15.1",
+    "chrome-remote-interface": "^0.32.1",
+    "puppeteer": "^19.8.5",
+    "selenium-webdriver": "^4.8.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
