@@ -1,22 +1,24 @@
 const { JW_USERNAME, JW_PASSWORD } = require('./secrets');
-
+const { OS } = require('./config');
 const puppeteer = require('puppeteer');
 
-const fs = require('fs').promises;
+const defaultDataDir = {
+  mac: '~/Library/Application Support/Chromium',
+  windows: '%LOCALAPPDATA%ChromiumUser Data',
+  linux: '~/.config/chromium',
+};
 
 const openBrowser = async () => {
   const browser = await puppeteer.launch({
     headless: false,
+    userDataDir: defaultDataDir[OS],
   });
   const page = await browser.newPage();
-  const cookiesString = await fs.readFile('./cookies.json');
-  const oldCookies = JSON.parse(cookiesString);
-  await page.setCookie(...oldCookies);
 
-  // await page.goto('https://secure.justworks.com/login', {
   await page.goto('https://hours.justworks.com', {
     waitUntil: 'networkidle2',
   });
+
   const url1 = await page.url();
   console.log('URL1', url1);
 
@@ -53,9 +55,6 @@ const openBrowser = async () => {
   await page.waitForNavigation({
     waitUntil: 'networkidle0',
   });
-
-  const newCookies = await page.cookies();
-  await fs.writeFile('./cookies.json', JSON.stringify(newCookies, null, 2));
 
   await page.screenshot({ path: 'page.png' });
 
