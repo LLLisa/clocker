@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "init":"echo 'module.exports = { JW_USERNAME: `your_username`, JW_PASSWORD: `your_password` };' > secrets.js",
     "start:dev": "nodemon --ignore './cookies.json'  main.js "
   },
   "keywords": [],
