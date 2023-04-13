@@ -1,17 +1,10 @@
 const { JW_USERNAME, JW_PASSWORD } = require('./secrets');
-const { OS } = require('./config');
 const puppeteer = require('puppeteer');
-
-const defaultDataDir = {
-  mac: '~/Library/Application Support/Chromium',
-  windows: '%LOCALAPPDATA%ChromiumUser Data',
-  linux: '~/.config/chromium',
-};
 
 const openBrowser = async () => {
   const browser = await puppeteer.launch({
     headless: false,
-    userDataDir: defaultDataDir[OS],
+    userDataDir: 'localCache',
   });
   const page = await browser.newPage();
 
