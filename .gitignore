@@ -1,3 +1,4 @@
 localCache
 node_modules/
 package-lock.json
+secrets.js
