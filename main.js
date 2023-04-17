@@ -55,25 +55,28 @@ const openBrowser = async () => {
   const url3 = await page.url();
   console.log('URL3', url3);
 
-  // switch (process.env.MODE) {
-  //   case CLOCK_IN:
-  //     clockIn(page);
-  //     break;
+  const modes = {
+    CLOCK_IN: 'CLOCK_IN',
+    START_BREAK: 'START_BREAK',
+    END_BREAK: 'END_BREAK',
+    CLOCK_OUT: 'CLOCK_OUT',
+  };
 
-  //   default:
-  //     break;
-  // }
-  // clockIn(page);
-  // startBreak(page);
-  // endBreak(page);
-
-  //
+  switch (process.env.MODE) {
+    case modes.CLOCK_IN:
+      clockIn(page);
+    case modes.START_BREAK:
+      startBreak(page);
+    case modes.END_BREAK:
+      endBreak(page);
+    case modes.CLOCK_OUT:
+      clockOut(page);
+    default:
+      break;
+  }
   //IMPORTANT
-  //
-  // await browser.close();
+  await browser.close();
 };
-
-openBrowser();
 
 const clockIn = async (page) => {
   const newShiftButton = await page.$('.btn');
@@ -90,8 +93,8 @@ const clockIn = async (page) => {
   const value = await (await option.getProperty('value')).jsonValue();
   await page.select('.form-control', value);
 
-  const startButton = await page.$('a.btn-primary:nth-child(1)');
-  await startButton.click();
+  const clockInButton = await page.$('a.btn-primary:nth-child(1)');
+  await clockInButton.click();
 };
 
 const startBreak = async (page) => {
@@ -119,4 +122,12 @@ const endBreak = async (page) => {
 const clockOut = async (page) => {
   const firstRow = await page.$('.date');
   await firstRow.click();
+
+  const clockOutButton = await page.waitForSelector(
+    'a.btn-danger:nth-child(2)'
+  );
+  await clockOutButton.hover();
+  await clockOutButton.click();
 };
+
+openBrowser();
