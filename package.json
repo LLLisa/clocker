@@ -1,7 +1,7 @@
 {
   "name": "clocker",
   "version": "1.0.0",
-  "description": "",
+  "description": "A library for clocking in and out at my job because I keep forgetting",
   "main": "index.js",
   "scripts": {
     "init":"echo 'module.exports = { JW_USERNAME: `your_username`, JW_PASSWORD: `your_password` };' > secrets.js",
