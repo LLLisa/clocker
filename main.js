@@ -115,3 +115,8 @@ const endBreak = async (page) => {
   await startBreakButton.hover();
   await startBreakButton.click();
 };
+
+const clockOut = async (page) => {
+  const firstRow = await page.$('.date');
+  await firstRow.click();
+};
