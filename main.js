@@ -55,7 +55,6 @@ const openBrowser = async () => {
   const url3 = await page.url();
   console.log('URL3', url3);
 
-  // await browser.close();
   // switch (process.env.MODE) {
   //   case CLOCK_IN:
   //     clockIn(page);
@@ -64,7 +63,14 @@ const openBrowser = async () => {
   //   default:
   //     break;
   // }
-  clockIn(page);
+  // clockIn(page);
+  // startBreak(page);
+  // endBreak(page);
+
+  //
+  //IMPORTANT
+  //
+  // await browser.close();
 };
 
 openBrowser();
@@ -85,7 +91,27 @@ const clockIn = async (page) => {
   await page.select('.form-control', value);
 
   const startButton = await page.$('a.btn-primary:nth-child(1)');
-  // await startButton.click();
+  await startButton.click();
+};
 
-  console.log('here');
+const startBreak = async (page) => {
+  const firstRow = await page.$('.date');
+  await firstRow.click();
+
+  const startBreakButton = await page.waitForSelector(
+    'a.btn-primary:nth-child(1)'
+  );
+  await startBreakButton.hover();
+  await startBreakButton.click();
+};
+
+const endBreak = async (page) => {
+  const firstRow = await page.$('.date');
+  await firstRow.click();
+
+  const startBreakButton = await page.waitForSelector(
+    'div.col-sm-9:nth-child(1) > a:nth-child(1)'
+  );
+  await startBreakButton.hover();
+  await startBreakButton.click();
 };
