@@ -1,9 +1,9 @@
 const { JW_USERNAME, JW_PASSWORD } = require('./secrets');
 const puppeteer = require('puppeteer');
 
-const openBrowser = async () => {
+const openBrowser = async (hasCredentials = true) => {
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: hasCredentials,
     // devtools: true,
     userDataDir: 'localCache',
   });
@@ -13,8 +13,7 @@ const openBrowser = async () => {
     waitUntil: 'networkidle2',
   });
 
-  const url1 = await page.url();
-  console.log('URL1', url1);
+  const url1 = page.url();
 
   await page.on.load;
 
@@ -29,8 +28,7 @@ const openBrowser = async () => {
     });
   }
 
-  const url2 = await page.url();
-  console.log('URL2', url2);
+  const url2 = page.url();
 
   if (url2.includes('secure.justworks.com/login')) {
     //input username
@@ -52,8 +50,23 @@ const openBrowser = async () => {
     });
   }
 
-  const url3 = await page.url();
-  console.log('URL3', url3);
+  //restarts in non-headless mode if mfa creds are expired
+  const url3 = page.url();
+  if (url3.includes('secure.justworks.com/tfa')) {
+    if (hasCredentials === true) {
+      await browser.close();
+      openBrowser(false);
+    } else {
+      const response = await page.waitForResponse(
+        'https://hours.justworks.com/dashboard/open_shifts',
+        { timeout: 0 }
+      );
+      if (response.ok()) {
+        await browser.close();
+        openBrowser(true);
+      }
+    }
+  }
 
   const modes = {
     CLOCK_IN: 'CLOCK_IN',
@@ -64,21 +77,35 @@ const openBrowser = async () => {
 
   switch (process.env.MODE) {
     case modes.CLOCK_IN:
-      clockIn(page);
+      await clockIn(page);
+      await browser.close();
+      break;
     case modes.START_BREAK:
-      startBreak(page);
+      await startBreak(page);
+      await browser.close();
+      break;
     case modes.END_BREAK:
-      endBreak(page);
+      await endBreak(page);
+      await browser.close();
+      break;
     case modes.CLOCK_OUT:
-      clockOut(page);
+      await clockOut(page);
+      await browser.close();
+      break;
     default:
+      console.log('NO CLOCK MODE SPECIFIED');
+      await browser.close();
       break;
   }
-  //IMPORTANT
-  await browser.close();
 };
 
 const clockIn = async (page) => {
+  const firstRow = await page.$('.date');
+  if (firstRow) {
+    console.log('---Already clocked into a shift---');
+    return;
+  }
+
   const newShiftButton = await page.$('.btn');
   await newShiftButton.click();
 
@@ -99,28 +126,42 @@ const clockIn = async (page) => {
 
 const startBreak = async (page) => {
   const firstRow = await page.$('.date');
+  if (!firstRow) {
+    console.log('---Not yet clocked into a shift---');
+    return;
+  }
+
   await firstRow.click();
 
   const startBreakButton = await page.waitForSelector(
     'a.btn-primary:nth-child(1)'
   );
+
   await startBreakButton.hover();
   await startBreakButton.click();
 };
 
 const endBreak = async (page) => {
   const firstRow = await page.$('.date');
+  if (!firstRow) {
+    console.log('---Not yet clocked into a shift---');
+    return;
+  }
   await firstRow.click();
 
-  const startBreakButton = await page.waitForSelector(
+  const endBreakButton = await page.waitForSelector(
     'div.col-sm-9:nth-child(1) > a:nth-child(1)'
   );
-  await startBreakButton.hover();
-  await startBreakButton.click();
+  await endBreakButton.hover();
+  await endBreakButton.click();
 };
 
 const clockOut = async (page) => {
   const firstRow = await page.$('.date');
+  if (!firstRow) {
+    console.log('---Not yet clocked into a shift---');
+    return;
+  }
   await firstRow.click();
 
   const clockOutButton = await page.waitForSelector(

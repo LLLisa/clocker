@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "init":"echo 'module.exports = { JW_USERNAME: `your_username`, JW_PASSWORD: `your_password` };' > secrets.js",
-    "start:dev": "FOO=BAR  nodemon --ignore './cookies.json'  main.js ",
+    "start:dev": "nodemon --ignore './cookies.json'  main.js ",
     "clockIn": "MODE=CLOCK_IN node main.js",
+    "startBreak": "MODE=START_BREAK node main.js",
+    "endBreak": "MODE=END_BREAK node main.js",
     "clockOut": "MODE=CLOCK_OUT node main.js"
   },
   "keywords": [],
