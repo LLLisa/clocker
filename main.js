@@ -130,7 +130,6 @@ const startBreak = async (page) => {
     console.log('---Not yet clocked into a shift---');
     return;
   }
-
   await firstRow.click();
 
   const startBreakButton = await page.waitForSelector(
